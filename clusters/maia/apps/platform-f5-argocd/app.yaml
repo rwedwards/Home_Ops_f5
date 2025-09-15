@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-f5-argocd
+  namespace: argocd
+  labels: { app.kubernetes.io/part-of: platform }
+spec:
+  project: platform
+  source:
+    repoURL: git@github.com:rwedwards/Home_Ops_f5.git
+    targetRevision: main
+    path: clusters/maia/apps/platform-f5-argocd/manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }

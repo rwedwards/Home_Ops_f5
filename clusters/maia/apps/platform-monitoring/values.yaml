@@ -1,0 +1,10 @@
+grafana:
+  adminPassword: "ChangeMe#Graf2025!"
+  ingress:
+    enabled: false
+  persistence:
+    enabled: true
+    size: 5Gi
+prometheus:
+  prometheusSpec:
+    retention: 15d
