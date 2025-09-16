@@ -1,0 +1,30 @@
+apiVersion: cis.f5.com/v1
+kind: TLSProfile
+metadata:
+  name: keycloak-tls
+  namespace: keycloak
+  labels: { f5cr: "true" }
+spec:
+  tls:
+    termination: edge
+    reference: secret
+    clientSSL: keycloak-tls
+  hosts:
+    - keycloak.sleepy-puppy.com
+---
+apiVersion: cis.f5.com/v1
+kind: VirtualServer
+metadata:
+  name: keycloak-vs
+  namespace: keycloak
+  labels: { f5cr: "true" }
+spec:
+  host: keycloak.sleepy-puppy.com
+  virtualServerAddress: 10.50.0.12
+  snat: /Common/snat_k8s
+  tlsProfileName: keycloak-tls
+  pools:
+    - path: /
+      service: keycloak
+      servicePort: 80
+

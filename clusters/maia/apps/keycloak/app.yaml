@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keycloak
+  namespace: argocd
+spec:
+  project: platform
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: keycloak
+  sources:
+    - repoURL: https://charts.bitnami.com/bitnami
+      chart: keycloak
+      targetRevision: 22.*            # or pin a specific version
+      helm:
+        releaseName: keycloak
+        valueFiles:
+          - $values/clusters/maia/apps/keycloak/values.yaml
+    - repoURL: git@github.com:rwedwards/Home_Ops_f5.git
+      targetRevision: main
+      ref: values
+    - repoURL: git@github.com:rwedwards/Home_Ops_f5.git
+      targetRevision: main
+      path: clusters/maia/apps/keycloak/manifests
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+

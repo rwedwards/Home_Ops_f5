@@ -1,0 +1,27 @@
+auth:
+  existingSecret: keycloak-admin
+
+service:
+  type: NodePort
+  ports:
+    http: 80          # expose HTTP 80 from Keycloak
+  # optional: pin a nodePort so F5 rules don’t flap
+  nodePorts:
+    http: 32081
+
+ingress:
+  enabled: false
+
+proxy: edge           # we terminate TLS at F5
+
+persistence:
+  enabled: true
+  size: 8Gi
+
+postgresql:
+  enabled: true
+  primary:
+    persistence:
+      enabled: true
+      size: 8Gi
+
