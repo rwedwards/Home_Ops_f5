@@ -23,5 +23,7 @@ postgresql:
   primary:
     persistence:
       enabled: true
-      size: 8Gi
+      existingClaim: keycloak-pg-pvc
+  volumePermissions:
+    enabled: true
 
