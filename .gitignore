@@ -51,3 +51,4 @@ kustomize
 *.tfstate
 *.tfstate.*
 
+argocd
