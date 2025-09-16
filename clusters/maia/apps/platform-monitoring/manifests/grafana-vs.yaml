@@ -1,0 +1,16 @@
+apiVersion: cis.f5.com/v1
+kind: VirtualServer
+metadata:
+  name: grafana-vs
+  namespace: monitoring
+  labels: { f5cr: "true" }
+spec:
+  host: grafana.sleepy-puppy.com
+  virtualServerAddress: 10.50.0.11   # pick your VIP
+  snat: /Common/snat_k8s
+  tlsProfileName: grafana-tls
+  pools:
+    - path: /
+      service: kube-prom-grafana     # service created by the chart
+      servicePort: 80
+

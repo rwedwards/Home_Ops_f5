@@ -5,7 +5,7 @@ grafana:
     enabled: true
     existingClaim: grafana-nfs-pvc
   admin:
-    existingSecret: grafana-admin-credentials  # keys: admin-user, admin-password
+    existingSecret: kube-prom-grafana  # keys: admin-user, admin-password
   service:
     type: ClusterIP
     port: 80

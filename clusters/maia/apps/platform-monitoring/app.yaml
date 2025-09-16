@@ -3,19 +3,27 @@ kind: Application
 metadata:
   name: platform-monitoring
   namespace: argocd
-  labels: { app.kubernetes.io/part-of: platform }
 spec:
   project: platform
-  source:
-    repoURL: https://prometheus-community.github.io/helm-charts
-    chart: kube-prometheus-stack
-    targetRevision: 62.7.0
-    helm:
-      releaseName: kube-prom
-      valueFiles: [ values.yaml ]
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
   syncPolicy:
     automated: { prune: true, selfHeal: true }
-    syncOptions: [ "CreateNamespace=true" ]
+    syncOptions: [ "CreateNamespace=true", "ApplyOutOfSyncOnly=true" ]
+
+  sources:
+    # Helm chart (Prometheus stack with Grafana)
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: kube-prometheus-stack
+      targetRevision: "65.*"        # use a compatible major; adjust if needed
+      helm:
+        releaseName: kube-prom
+        valueFiles:
+          - $values/clusters/maia/apps/platform-monitoring/values.yaml
+
+    # Our K8s manifests (cert, TLSProfile, VS, PV/PVC)
+    - repoURL: git@github.com:rwedwards/Home_Ops_f5.git
+      targetRevision: main
+      path: clusters/maia/apps/platform-monitoring/manifests
+

@@ -1,0 +1,13 @@
+apiVersion: cis.f5.com/v1
+kind: TLSProfile
+metadata:
+  name: grafana-tls
+  namespace: monitoring
+  labels: { f5cr: "true" }
+spec:
+  tls:
+    termination: edge
+    reference: secret       # tell CIS to pull from the Kubernetes Secret
+    clientSSL: grafana-tls  # the Secret name from the Certificate above
+  hosts:
+    - grafana.sleepy-puppy.com
