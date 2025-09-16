@@ -7,7 +7,7 @@ spec:
   project: platform
   source:
     repoURL: https://github.com/rwedwards/cert-manager-webhook-namecheap-rwe.git
-    targetRevision: main
+    targetRevision: master
     path: charts/cert-manager-webhook-namecheap
     helm:
       valueFiles: [ values.yaml ]

@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-monitoring-crds
+  namespace: argocd
+  labels: { env: maia }
+spec:
+  project: platform
+  source:
+    repoURL: https://github.com/rwedwards/Home_Ops_f5.git
+    targetRevision: main
+    path: clusters/maia/apps/platform-monitoring/crds
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
+  # ensure CRDs are applied before the main app
+  syncWave: "-1"

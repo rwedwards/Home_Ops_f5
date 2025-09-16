@@ -3,8 +3,12 @@ kind: TLSProfile
 metadata:
   name: argocd-tls
   namespace: argocd
-  labels: { f5cr: "true" }
+  labels:
+    f5cr: "true"              # CIS watches CRs with this label
 spec:
   tls:
-    clientSSL: /Common/clientssl-argocd
-
+    termination: edge
+    reference: secret         # <-- tell CIS the source is a Kubernetes Secret
+    clientSSL: argocd-tls     # <-- name of the k8s Secret with tls.crt/tls.key
+  hosts:
+    - argocd.sleepy-puppy.com

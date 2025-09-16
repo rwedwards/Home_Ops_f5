@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-tls
+  namespace: argocd
+spec:
+  secretName: argocd-tls                 # new secret; leaves staging secret untouched
+  dnsNames:
+    - argocd.sleepy-puppy.com
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-prod               # uses your prod issuer
+  duration: 2160h                        # 90d
+  renewBefore: 360h                      # 15d
+  privateKey:
+    algorithm: RSA
+    size: 2048
+

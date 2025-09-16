@@ -1,4 +1,3 @@
-# Matches your manual flow
 groupName: acme.sleepy-puppy.com
 
 namecheap:
@@ -13,3 +12,9 @@ namecheap:
         name: namecheap-api-key
         key: apiKey
 
+# --- DNS override for the webhook pod ---
+dnsPolicy: None
+dnsConfig:
+  nameservers:
+    - 1.1.1.1
+    - 8.8.8.8
