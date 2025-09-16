@@ -1,0 +1,53 @@
+# --- GitOps repo: keep YAML small & text only ---
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Local CLIs & binaries
+argocd
+kubectl
+helm
+kustomize
+*.exe
+*.dll
+*.so
+*.dylib
+*.bin
+*.out
+*.o
+*.a
+
+# Disk images & VM blobs
+*.img
+*.iso
+*.qcow2
+*.raw
+
+# Archives (incl. Helm chart packages)
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.gz
+*.bz2
+*.xz
+*.7z
+
+# Secrets & cert material (never commit raw keys)
+*.key
+*.crt
+*.pem
+*.pfx
+*.p12
+*.jks
+*kubeconfig*
+
+# Terraform/other state (just in case)
+.terraform/
+*.tfstate
+*.tfstate.*
+
