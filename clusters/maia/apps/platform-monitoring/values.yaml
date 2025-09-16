@@ -1,10 +1,16 @@
 grafana:
-  adminPassword: "ChangeMe#Graf2025!"
   ingress:
-    enabled: false
+    enabled: false        # F5 publishes it; no NGINX ingress
   persistence:
     enabled: true
-    size: 5Gi
+    existingClaim: grafana-nfs-pvc
+  admin:
+    existingSecret: grafana-admin-credentials  # keys: admin-user, admin-password
+  service:
+    type: ClusterIP
+    port: 80
+
 prometheus:
   prometheusSpec:
     retention: 15d
+
