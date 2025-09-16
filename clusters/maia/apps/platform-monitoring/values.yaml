@@ -7,7 +7,7 @@ grafana:
   admin:
     existingSecret: kube-prom-grafana  # keys: admin-user, admin-password
   service:
-    type: ClusterIP
+    type: NodePort
     port: 80
 
 prometheus:
