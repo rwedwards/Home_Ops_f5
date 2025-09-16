@@ -13,4 +13,5 @@ grafana:
 prometheus:
   prometheusSpec:
     retention: 15d
-
+defaultRules:
+  create: false
