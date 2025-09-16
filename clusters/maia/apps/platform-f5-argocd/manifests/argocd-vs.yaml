@@ -8,6 +8,7 @@ spec:
   host: argocd.sleepy-puppy.com
   virtualServerAddress: 10.50.0.10
   snat: "/Common/snat_k8s"
+  tlsProfileName: argocd-tls
   pools:
     - path: /
       service: argocd-server

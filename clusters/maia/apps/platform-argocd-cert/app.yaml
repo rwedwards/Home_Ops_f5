@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-argocd-cert
+  namespace: argocd
+spec:
+  project: platform
+  source:
+    repoURL: git@github.com:rwedwards/Home_Ops_f5.git
+    targetRevision: main
+    path: clusters/maia/apps/platform-argocd-cert/manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
+

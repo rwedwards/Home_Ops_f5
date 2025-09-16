@@ -1,0 +1,15 @@
+# Matches your manual flow
+groupName: acme.sleepy-puppy.com
+
+namecheap:
+  apiUser:
+    valueFrom:
+      secretKeyRef:
+        name: namecheap-api-key
+        key: apiUser
+  apiKey:
+    valueFrom:
+      secretKeyRef:
+        name: namecheap-api-key
+        key: apiKey
+

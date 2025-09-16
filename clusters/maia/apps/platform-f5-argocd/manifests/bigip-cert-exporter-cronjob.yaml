@@ -1,0 +1,66 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: argocd-cert-to-bigip
+  namespace: argocd
+spec:
+  schedule: "*/30 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          volumes:
+            - name: cert
+              secret:
+                secretName: argocd-cert
+          containers:
+            - name: push
+              image: curlimages/curl:8.8.0
+              envFrom:
+                - secretRef: { name: bigip-creds }
+              volumeMounts:
+                - name: cert
+                  mountPath: /certs
+                  readOnly: true
+              command: ["/bin/sh","-c"]
+              args:
+                - |
+                  set -euo pipefail
+                  crt=/certs/tls.crt
+                  key=/certs/tls.key
+                  auth="-u ${BIGIP_USER}:${BIGIP_PASS}"
+
+                  # upload files
+                  curl -sk ${auth} -H "Content-Type: application/octet-stream" \
+                    --data-binary @"$crt" \
+                    "${BIGIP_URL}/mgmt/shared/file-transfer/uploads/argocd.crt"
+                  curl -sk ${auth} -H "Content-Type: application/octet-stream" \
+                    --data-binary @"$key" \
+                    "${BIGIP_URL}/mgmt/shared/file-transfer/uploads/argocd.key"
+
+                  # install/replace cert and key objects
+                  curl -sk ${auth} -H "Content-Type: application/json" -X POST \
+                    -d '{"name":"argocd.crt","from-local-file":"/var/config/rest/downloads/argocd.crt"}' \
+                    "${BIGIP_URL}/mgmt/tm/sys/file/ssl-cert" || \
+                  curl -sk ${auth} -H "Content-Type: application/json" -X PUT \
+                    -d '{"from-local-file":"/var/config/rest/downloads/argocd.crt"}' \
+                    "${BIGIP_URL}/mgmt/tm/sys/file/ssl-cert/~Common~argocd.crt"
+
+                  curl -sk ${auth} -H "Content-Type: application/json" -X POST \
+                    -d '{"name":"argocd.key","from-local-file":"/var/config/rest/downloads/argocd.key"}' \
+                    "${BIGIP_URL}/mgmt/tm/sys/file/ssl-key" || \
+                  curl -sk ${auth} -H "Content-Type: application/json" -X PUT \
+                    -d '{"from-local-file":"/var/config/rest/downloads/argocd.key"}' \
+                    "${BIGIP_URL}/mgmt/tm/sys/file/ssl-key/~Common~argocd.key"
+
+                  # ensure clientssl profile exists/updated
+                  curl -sk ${auth} -H "Content-Type: application/json" -X POST \
+                    -d '{"name":"clientssl-argocd","cert":"argocd.crt","key":"argocd.key"}' \
+                    "${BIGIP_URL}/mgmt/tm/ltm/profile/client-ssl" || \
+                  curl -sk ${auth} -H "Content-Type: application/json" -X PATCH \
+                    -d '{"cert":"argocd.crt","key":"argocd.key"}' \
+                    "${BIGIP_URL}/mgmt/tm/ltm/profile/client-ssl/~Common~clientssl-argocd"
+
+                  echo "✅ BIG-IP clientssl-argocd updated."
+

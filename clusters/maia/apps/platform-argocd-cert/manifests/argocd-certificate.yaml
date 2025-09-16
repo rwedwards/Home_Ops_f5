@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-cert
+  namespace: argocd
+spec:
+  secretName: argocd-cert
+  duration: 2160h        # 90d
+  renewBefore: 360h      # 15d
+  issuerRef:
+    name: letsencrypt-staging   # use staging first if you want to test
+    kind: ClusterIssuer
+  dnsNames:
+    - argocd.sleepy-puppy.com
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+
