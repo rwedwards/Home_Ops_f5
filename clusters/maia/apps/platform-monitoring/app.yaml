@@ -3,29 +3,36 @@ kind: Application
 metadata:
   name: platform-monitoring
   namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   project: platform
   destination:
-    server: https://kubernetes.default.svc
     namespace: monitoring
-  syncPolicy:
-    automated: { prune: true, selfHeal: true }
-    syncOptions: [ "CreateNamespace=true", "ApplyOutOfSyncOnly=true" ]
-
+    server: https://kubernetes.default.svc
   sources:
-    # Helm chart (Prometheus stack with Grafana)
+    # 1) Helm repo (the chart)
     - repoURL: https://prometheus-community.github.io/helm-charts
       chart: kube-prometheus-stack
-      targetRevision: "65.*"        # use a compatible major; adjust if needed
+      targetRevision: 65.*
       helm:
         releaseName: kube-prom
         valueFiles:
           - $values/clusters/maia/apps/platform-monitoring/values.yaml
 
-    # Our K8s manifests (cert, TLSProfile, VS, PV/PVC)
+    # 2) Your Git repo (extra manifests, if any)
     - repoURL: git@github.com:rwedwards/Home_Ops_f5.git
       targetRevision: main
       path: clusters/maia/apps/platform-monitoring/manifests
+
+    # 3) Your Git repo again, only to provide the values file via $values
+    - repoURL: git@github.com:rwedwards/Home_Ops_f5.git
+      targetRevision: main
+      ref: values
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
 
