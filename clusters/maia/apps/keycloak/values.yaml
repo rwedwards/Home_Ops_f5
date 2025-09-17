@@ -1,18 +1,27 @@
 auth:
   existingSecret: keycloak-admin
 
+extraEnvVars:
+  - name: KC_PROXY
+    value: "edge"
+  - name: KC_HOSTNAME
+    value: "keycloak.sleepy-puppy.com"
+  - name: KC_HOSTNAME_STRICT
+    value: "true"
+  - name: KC_HTTP_RELATIVE_PATH
+    value: "/"
+
 service:
   type: NodePort
   ports:
-    http: 80          # expose HTTP 80 from Keycloak
-  # optional: pin a nodePort so F5 rules don’t flap
+    http: 80
   nodePorts:
     http: 32081
 
 ingress:
   enabled: false
 
-proxy: edge           # we terminate TLS at F5
+proxy: edge  # fine to keep; the env var also sets it in Keycloak
 
 persistence:
   enabled: true
@@ -26,4 +35,3 @@ postgresql:
       existingClaim: keycloak-pg-pvc
   volumePermissions:
     enabled: true
-
