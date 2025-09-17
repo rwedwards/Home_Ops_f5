@@ -29,9 +29,12 @@ persistence:
 
 postgresql:
   enabled: true
+  auth:
+    username: bn_keycloak
+    database: bitnami_keycloak
+    existingSecret: keycloak-postgresql   # keep using the same secret
   primary:
     persistence:
       enabled: true
-      existingClaim: keycloak-pg-pvc
-  volumePermissions:
-    enabled: true
+      size: 8Gi
+      storageClass:
