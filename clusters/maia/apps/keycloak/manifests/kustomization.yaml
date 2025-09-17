@@ -5,9 +5,11 @@ namespace: keycloak
 configMapGenerator:
   - name: sleepy-theme
     files:
-      - ../theme/theme.properties
-      - ../theme/sleepy.css
-      - ../theme/keycloak-logo.png
+      # left side = key in the ConfigMap, right side = file path
+      - theme.properties=theme/theme.properties
+      - sleepy.css=theme/sleepy.css
+      - keycloak-logo.png=theme/keycloak-logo.png
 
 generatorOptions:
   disableNameSuffixHash: true
+
