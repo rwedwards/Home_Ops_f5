@@ -2,14 +2,47 @@ auth:
   existingSecret: keycloak-admin
 
 extraEnvVars:
-  - name: KC_PROXY
-    value: "edge"
+  - name: KC_PROXY_HEADERS
+    value: "xforwarded"
   - name: KC_HOSTNAME
     value: "keycloak.sleepy-puppy.com"
   - name: KC_HOSTNAME_STRICT
     value: "true"
+  - name: KC_HOSTNAME_URL
+    value: "https://keycloak.sleepy-puppy.com"
+  - name: KC_HOSTNAME_ADMIN_URL
+    value: "https://keycloak.sleepy-puppy.com"
   - name: KC_HTTP_RELATIVE_PATH
     value: "/"
+  - name: KC_TRUSTSTORE_PATHS
+    value: "/opt/keycloak/trust"
+
+# Mount BOTH the AD CA bundle and the sleepy theme
+extraVolumes:
+  - name: ad-ca-bundle
+    secret:
+      secretName: ad-ca-bundle
+  - name: sleepy-theme
+    configMap:
+      name: sleepy-theme
+      items:
+        - key: theme.properties
+          path: sleepy/theme.properties
+        - key: sleepy.css
+          path: sleepy/resources/css/sleepy.css
+        - key: keycloak-logo.png
+          path: sleepy/resources/img/keycloak-logo.png
+
+extraVolumeMounts:
+  # CA bundle for LDAPS trust; must match KC_TRUSTSTORE_PATHS
+  - name: ad-ca-bundle
+    mountPath: /opt/keycloak/trust
+    readOnly: true
+
+  # Theme directory
+  - name: sleepy-theme
+    mountPath: /opt/bitnami/keycloak/themes
+    readOnly: true
 
 service:
   type: NodePort
@@ -21,7 +54,7 @@ service:
 ingress:
   enabled: false
 
-proxy: edge  # fine to keep; the env var also sets it in Keycloak
+# removed: proxy: edge  # use KC_PROXY_HEADERS instead
 
 persistence:
   enabled: true
@@ -29,12 +62,18 @@ persistence:
 
 postgresql:
   enabled: true
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/postgresql
+    tag: "17.6.0-debian-12-r4"
+    pullPolicy: IfNotPresent
   auth:
     username: bn_keycloak
     database: bitnami_keycloak
-    existingSecret: keycloak-postgresql   # keep using the same secret
+    existingSecret: keycloak-postgresql
   primary:
     persistence:
       enabled: true
       size: 10Gi
-      storageClass:
+      storageClass: nfs-client
+

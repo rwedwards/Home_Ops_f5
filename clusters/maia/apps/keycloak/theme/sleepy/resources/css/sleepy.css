@@ -1,0 +1,211 @@
+/* ===========================
+   Sleepy-Puppy Login Theme
+   Midnight Calm (dark)
+   =========================== */
+
+/* Tunables */
+:root {
+  color-scheme: dark;
+  --brand:        #3b82f6;   /* primary button/link */
+  --brand-hover:  #60a5fa;
+  --logo-height:  576px;     /* change to 576px for ~6" tall at 96dpi */
+}
+
+/* ---------- Page background / base text ---------- */
+html.login-pf,
+body.login-pf,
+.login-pf body {
+  background: #0b1020 !important;
+  color: #e5e7eb !important;
+}
+
+/* ---------- Card / containers (PF3 classic) ---------- */
+.login-pf-page,
+.login-pf-page .card-pf,
+.login-pf-page .card-pf .card-pf-body,
+.login-pf-page .login-pf-page-header {
+  background: #111827 !important;
+  color: #e5e7eb !important;
+  border-color: #374151 !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,.4) !important;
+}
+
+.card-pf {
+  border: 1px solid #374151 !important;
+}
+
+/* Headings & text */
+#kc-page-title,
+.login-pf-page .login-pf-header h1,
+.login-pf-page .login-pf-header h2,
+.login-pf-page .kc-feedback-text,
+.login-pf-page .kc-social-item,
+.control-label,
+.form-group label,
+label {
+  color: #e5e7eb !important;
+}
+
+/* Inputs (PF3 + PF4 mix) */
+.form-control,
+.pf-c-form-control {
+  background: #0f172a !important;
+  border: 1px solid #374151 !important;
+  color: #e5e7eb !important;
+}
+
+.pf-c-input-group,
+.input-group {
+  background: #0f172a !important;
+  border: 1px solid #374151 !important;
+}
+
+.pf-c-input-group .pf-c-form-control { border: 0 !important; }
+
+/* Placeholders */
+.form-control::placeholder,
+.pf-c-form-control::placeholder {
+  color: #9ca3af !important;
+}
+
+/* Autofill (Chromium/WebKit) */
+input.form-control:-webkit-autofill,
+input.pf-c-form-control:-webkit-autofill {
+  -webkit-text-fill-color: #e5e7eb !important;
+  -webkit-box-shadow: 0 0 0px 1000px #0f172a inset !important;
+  caret-color: #e5e7eb !important;
+}
+
+/* Buttons */
+.btn.btn-primary,
+.pf-c-button.pf-m-primary {
+  background: var(--brand) !important;
+  border-color: var(--brand) !important;
+  color: #fff !important;
+}
+.btn.btn-primary:hover,
+.pf-c-button.pf-m-primary:hover {
+  background: var(--brand-hover) !important;
+  border-color: var(--brand-hover) !important;
+}
+
+/* Links */
+.login-pf-page a,
+a {
+  color: #60a5fa !important;
+}
+
+/* Alerts */
+.pf-c-alert { background: #1f2937 !important; color: #f3f4f6 !important; }
+.pf-c-alert__title { color: #f87171 !important; }
+
+/* ---------- PF4 containers (if your install renders PF4) ---------- */
+.pf-c-login { background: #0b1020 !important; color: #e5e7eb !important; }
+.pf-c-login__container,
+.pf-c-login__main,
+.pf-c-card {
+  background: #111827 !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,.4) !important;
+}
+.pf-c-title,
+.pf-c-content,
+.pf-c-form__label,
+.pf-c-form__label-text {
+  color: #e5e7eb !important;
+}
+
+/* ---------- Header logo: centered + scalable ---------- */
+#kc-header { background: transparent !important; }
+
+/* Your realm title exists as text inside #kc-header-wrapper.
+   We hide that text and paint the PNG as a centered background. */
+#kc-header-wrapper {
+  background: url('../img/keycloak-logo.png') no-repeat center center !important;
+  background-size: auto var(--logo-height) !important; /* scale by height */
+  height: calc(var(--logo-height) + 16px) !important;
+  width: 100% !important;
+  margin: 0 auto 16px auto !important;
+
+  /* hide the text while keeping it accessible */
+  color: transparent !important;
+  text-indent: -9999px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+/* Optional: smaller logo on very narrow screens so the form stays visible */
+@media (max-width: 480px) {
+  :root { --logo-height: 120px; }
+}
+/* ===== Keep username/password centered and NOT full-screen wide ===== */
+:root { --form-width: 480px; }   /* try 420px or 360px if you want tighter */
+
+html.login-pf .login-pf-page {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+html.login-pf .login-pf-page > .card-pf {
+  width: 100% !important;
+  max-width: var(--form-width) !important;
+  margin: 0 auto !important;
+}
+
+html.login-pf .login-pf-page > .card-pf .card-pf-body,
+#kc-content, #kc-content-wrapper, #kc-form, #kc-form-wrapper, #kc-form-login {
+  width: 100% !important;
+  max-width: var(--form-width) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.form-group, .pf-c-input-group {
+  width: 100% !important;
+  max-width: var(--form-width) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.pf-c-form-control, .form-control {
+  width: 100% !important;   /* fill the narrow container only */
+}
+@media (max-width: 520px) { :root { --form-width: 92vw; } }
+/* ===== Center form without breaking the header ===== */
+
+/* Revert the page container to block so the header spans full width */
+html.login-pf .login-pf-page {
+  display: block !important;
+}
+
+/* Keep the card centered & narrow regardless of screen width */
+:root { --form-width: 480px; }  /* adjust to 420px/360px to taste */
+
+html.login-pf .login-pf-page > .card-pf {
+  width: 100% !important;
+  max-width: var(--form-width) !important;
+  margin: 0 auto !important;
+}
+
+/* Inner containers honor the cap */
+html.login-pf #kc-content,
+html.login-pf #kc-content-wrapper,
+html.login-pf #kc-form,
+html.login-pf #kc-form-wrapper,
+html.login-pf #kc-form-login,
+html.login-pf .form-group,
+html.login-pf .pf-c-input-group {
+  width: 100% !important;
+  max-width: var(--form-width) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Inputs fill the capped width only */
+.pf-c-form-control, .form-control {
+  width: 100% !important;
+}
+
+/* Make sure the header block is visible & full width so the bg logo shows */
+#kc-header { width: 100% !important; }
+#kc-header-wrapper { display: block !important; }
+
