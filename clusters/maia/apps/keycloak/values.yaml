@@ -25,7 +25,7 @@ proxy: edge  # fine to keep; the env var also sets it in Keycloak
 
 persistence:
   enabled: true
-  size: 8Gi
+  size: 10Gi
 
 postgresql:
   enabled: true
@@ -36,5 +36,5 @@ postgresql:
   primary:
     persistence:
       enabled: true
-      size: 8Gi
+      size: 10Gi
       storageClass:
