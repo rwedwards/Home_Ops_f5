@@ -8,7 +8,7 @@ spec:
   tls:
     termination: edge
     reference: secret
-    clientSSL: keycloak-tls
+    clientSSL: keycloak-tls          # <-- Kubernetes Secret name (type=tls)
   hosts:
     - keycloak.sleepy-puppy.com
 ---
@@ -20,11 +20,15 @@ metadata:
   labels: { f5cr: "true" }
 spec:
   host: keycloak.sleepy-puppy.com
-  virtualServerAddress: 10.50.0.12
-  snat: /Common/snat_k8s
+  virtualServerAddress: 10.50.0.12   # <-- your VIP
+  snat: /Common/snat_k8s             # or "auto" if you don't have a SNAT pool
   tlsProfileName: keycloak-tls
+  poolMemberType: nodeport           # <-- important with your NodePort service
+  # Attach an iRule that injects X-Forwarded-* headers (create it on BIG-IP first)
+  iRules:
+    - /Common/kc_xfwd_headers
   pools:
     - path: /
-      service: keycloak
-      servicePort: 80
+      service: keycloak              # k8s Service name
+      servicePort: 80                # matches your Service port (NodePort is mapped by CIS)
 
