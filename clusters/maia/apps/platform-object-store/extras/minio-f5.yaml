@@ -1,0 +1,53 @@
+apiVersion: cis.f5.com/v1
+kind: TLSProfile
+metadata:
+  name: s3-tls
+  namespace: object-store
+spec:
+  tls:
+    termination: edge
+    clientSSL:
+      name: s3-tls
+---
+apiVersion: cis.f5.com/v1
+kind: VirtualServer
+metadata:
+  name: minio-s3
+  namespace: object-store
+spec:
+  host: s3.sleepy-puppy.com
+  virtualServerAddress: "10.50.0.14"
+  tlsProfileName: s3-tls
+  httpTraffic: redirect
+  pools:
+    - path: /
+      service: minio
+      servicePort: 9000
+      poolMemberType: cluster
+---
+apiVersion: cis.f5.com/v1
+kind: TLSProfile
+metadata:
+  name: minio-console-tls
+  namespace: object-store
+spec:
+  tls:
+    termination: edge
+    clientSSL:
+      name: minio-console-tls
+---
+apiVersion: cis.f5.com/v1
+kind: VirtualServer
+metadata:
+  name: minio-console
+  namespace: object-store
+spec:
+  host: minio.sleepy-puppy.com
+  virtualServerAddress: "10.50.0.15"
+  tlsProfileName: minio-console-tls
+  httpTraffic: redirect
+  pools:
+    - path: /
+      service: minio-console
+      servicePort: 9001
+      poolMemberType: cluster

@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-object-store-minio
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: object-store
+  source:
+    repoURL: https://charts.min.io
+    chart: minio
+    targetRevision: "*"
+    helm:
+      values: |
+        mode: distributed
+        replicas: 4
+        auth:
+          existingSecret: minio-root-creds  # create this secret out-of-band: keys rootUser/rootPassword
+        persistence:
+          enabled: true
+          size: 200Gi
+        resources:
+          requests: { cpu: "500m", memory: "1Gi" }
+          limits:   { cpu: "2",    memory: "4Gi" }
+        service:
+          type: ClusterIP
+        consoleService:
+          type: ClusterIP
+        podSecurityContext:
+          runAsNonRoot: true
+          fsGroup: 1000
+        containerSecurityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions: [ "CreateNamespace=true" ]

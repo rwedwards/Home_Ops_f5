@@ -1,0 +1,87 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-outline
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: wiki
+  source:
+    repoURL: https://community-charts.github.io/helm-charts
+    chart: outline
+    targetRevision: "*"
+    helm:
+      values: |
+        url: "https://wiki.sleepy-puppy.com"
+        replicaCount: 2
+        service:
+          type: ClusterIP
+          ports:
+            http: 3000
+        ingress:
+          enabled: false
+        livenessProbe: { enabled: true, path: /_health }
+        readinessProbe: { enabled: true, path: /_health }
+        podSecurityContext:
+          runAsNonRoot: true
+          seccompProfile: { type: RuntimeDefault }
+        containerSecurityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities: { drop: ["ALL"] }
+          readOnlyRootFilesystem: true
+        extraVolumes:
+          - name: tmp
+            emptyDir: {}
+        extraVolumeMounts:
+          - name: tmp
+            mountPath: /tmp
+        resources:
+          requests: { cpu: "200m", memory: "512Mi" }
+          limits:   { cpu: "1",    memory: "1Gi" }
+        extraEnv:
+          - name: OIDC_ISSUER_URL
+            value: "https://sso.sleepy-puppy.com/realms/sleepy-puppy"
+          - name: OIDC_CLIENT_ID
+            value: "outline"
+          - name: OIDC_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef: { name: outline-oidc, key: client-secret }
+        extraEnvFrom:
+          - secretRef: { name: outline-secrets }
+        fileStorage:
+          mode: s3
+          s3:
+            bucket: "outline"
+            region: "us-east-1"
+            bucketUrl: "https://s3.sleepy-puppy.com"
+            forcePathStyle: true
+            acl: private
+            existingSecret: "outline-s3"
+        postgresql:
+          enabled: true
+          architecture: standalone
+          auth:
+            username: outline
+            password: "CHANGE_ME_STRONG"
+            database: outline
+          primary:
+            persistence:
+              enabled: true
+              size: 20Gi
+        redis:
+          enabled: true
+          architecture: standalone
+          auth:
+            enabled: true
+          master:
+            persistence:
+              enabled: true
+              size: 5Gi
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions: [ "CreateNamespace=true" ]

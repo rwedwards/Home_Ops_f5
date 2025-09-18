@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-object-store-extras
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: object-store
+  source:
+    repoURL: https://example.invalid/your/git/repo.git   # <-- replace with your Git repo URL
+    targetRevision: HEAD
+    path: clusters/maia/apps/platform-object-store/extras
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions: [ "CreateNamespace=true" ]

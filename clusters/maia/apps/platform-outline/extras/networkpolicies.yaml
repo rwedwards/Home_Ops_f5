@@ -1,0 +1,85 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: wiki
+spec:
+  podSelector: {}
+  policyTypes: ["Ingress","Egress"]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: wiki
+spec:
+  podSelector: {}
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# Allow Outline (pods labeled app.kubernetes.io/name=outline) to egress to Keycloak + MinIO
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: outline-egress-keycloak
+  namespace: wiki
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: outline
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: sso
+      ports:
+        - protocol: TCP
+          port: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: outline-egress-minio
+  namespace: wiki
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: outline
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: object-store
+      ports:
+        - protocol: TCP
+          port: 9000
+---
+# Allow ingress to Outline from anywhere on 3000 (needed for F5 -> Service -> Pod)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: outline-ingress-from-any
+  namespace: wiki
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: outline
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - ipBlock: { cidr: "0.0.0.0/0" }
+      ports:
+        - protocol: TCP
+          port: 3000
